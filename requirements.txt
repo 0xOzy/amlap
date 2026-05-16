@@ -1,0 +1,8 @@
+slither-analyzer
+semgrep
+web3
+eth-abi
+eth-utils
+python-dotenv
+jupyter
+pandas

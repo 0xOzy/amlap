@@ -1,0 +1,44 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+
+remappings = [
+    "@layerzerolabs/oapp-evm/=lib/devtools/packages/oapp-evm/",
+    "@layerzerolabs/lz-evm-protocol-v2/=lib/LayerZero-v2/packages/layerzero-v2/evm/protocol/",
+    "@layerzerolabs/lz-evm-messagelib-v2/=lib/LayerZero-v2/packages/layerzero-v2/evm/messagelib/",
+    "@chainlink/contracts/=lib/foundry-chainlink-toolkit/lib/chainlink-brownie-contracts/contracts/src/",
+    "solidity-bytes-utils/=lib/solidity-bytes-utils/",
+    "erc4626-tests/=lib/erc4626-tests/",
+    "euler-interfaces/=lib/euler-interfaces/",
+    "euler-vault-kit/=lib/euler-vault-kit/",
+    "forge-gas-snapshot/=lib/euler-vault-kit/lib/permit2/lib/forge-gas-snapshot/src/",
+    "openzeppelin/=lib/ethereum-vault-connector/lib/openzeppelin-contracts/contracts/",
+    "permit2/=lib/euler-vault-kit/lib/permit2/",
+    "halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/",
+    "chainlink-brownie-contracts/=lib/foundry-chainlink-toolkit/lib/chainlink-brownie-contracts/contracts/src/",
+    "@openzeppelin/=lib/foundry-chainlink-toolkit/lib/openzeppelin-contracts/"
+]
+
+solc_version = "0.8.26"
+
+optimizer = true
+optimizer_runs = 200
+
+fs_permissions = [
+    { access = "read-write", path = "./" }
+]
+
+[rpc_endpoints]
+mainnet = "${ETH_RPC_URL}"
+arbitrum = "${ARB_RPC_URL}"
+base = "${BASE_RPC_URL}"
+optimism = "${OP_RPC_URL}"
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+arbitrum = { key = "${ARBISCAN_API_KEY}" }
+base = { key = "${BASESCAN_API_KEY}" }
+

@@ -1,0 +1,8 @@
+- AmpleEarnFactory is proxy on Monad but immutable on Base/Arbitrum/Katana — why the asymmetry?
+- AmplePerspective address is identical on Monad, Arbitrum, and Katana (deterministic CREATE2)
+- CrossChainRouter differs per chain (different LayerZero peer configs)
+- Euler Earn docs mention "realized losses accounting" — bad debt is NOT socialized to depositors; can create withdrawal issues
+- Performance fee up to 50% of yield — high fee could incentivize curator manipulation
+- Prize distribution uses "verifiable on-chain randomness" — need to verify RNG source
+- LayerZero endpoint address same across chains?
+- Pashov audits found issues — need to review what was fixed vs accepted

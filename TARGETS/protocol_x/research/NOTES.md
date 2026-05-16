@@ -1,0 +1,5 @@
+- Vault does not appear to track internal accounting separately.
+- RewardDistributor updates occur after transfer.
+- Oracle fallback path seems weak.
+- Proxy admin controlled by multisig.
+- Liquidation logic depends heavily on oracle freshness.
