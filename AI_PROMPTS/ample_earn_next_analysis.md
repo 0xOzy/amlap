@@ -47,3 +47,8 @@ Kamu adalah asisten riset keamanan smart contract yang bekerja dalam framework `
 ## Output
 Simpan hasil analisis dalam file baru:
 - TARGETS/ample_earn/research/POST_VALIDATION_ANALYSIS.md
+
+10. Dataset eksternal untuk referensi kerentanan:
+   - DATASETS/smart_contracts/vulnerable/smartbugs-curated
+   - DATASETS/smart_contracts/swc-registry
+   - DATASETS/smart_contracts/vulndb

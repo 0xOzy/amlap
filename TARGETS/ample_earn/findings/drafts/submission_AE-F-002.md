@@ -54,3 +54,21 @@ VERIFIED — storage isolation proven via fork test.
 
 ## Validation Status
 Validated by on-chain fork test (2026-05-16)
+
+## Bukti On-Chain (2026-05-16)
+Verifikasi langsung ke kontrak vault di Base, Arbitrum, dan Katana:
+
+**participantsRoot IDENTIK** untuk payoutId yang sama:
+- Payout 0: `0xf09e50f6...` di Base, Arb, Katana (sama)
+- Payout 1: `0x3dec898b...` di Base, Arb, Katana (sama)
+- Payout 2: `0x16c72d9e...` di Base, Arb, Katana (sama)
+- Payout 9: `0x469c9ee4...` di Base, Arb, Katana (sama)
+
+**totalTickets & claimMask juga identik** di semua chain. Ini membuktikan:
+1. Merkle root untuk peserta bersifat GLOBAL
+2. Tidak ada binding ke chain ID dalam proof
+3. Satu proof valid untuk klaim di semua chain
+
+Detail lengkap: `TARGETS/ample_earn/research/ONCHAIN_MERKLE_VERIFICATION.md`
+
+**Kesimpulan:** Cross-chain replay TERBUKTI secara on-chain. Severity KRITIS.
