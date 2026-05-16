@@ -31,7 +31,24 @@ A simplified router without nonReentrant is called twice because the attacker re
 - No direct theft, but the integrity of the protocol is compromised.
 
 ## Economic Damage
-Primarily griefing; no direct monetary loss except gas costs for the protocol or users.
+
+### Standalone Impact (AE-F-005 only)
+Primarily griefing; no direct fund loss. An attacker can re-enter `batchCrossChainClaimPayout` to send duplicate LayerZero messages, causing event pollution, unnecessary fee consumption, and potential stuck payouts. The protocol or users bear the gas cost of duplicate messages.
+
+### Combined Impact (with AE-F-002)
+When combined with AE-F-002 (cross-chain payout replay), the reentrancy amplifies the damage by **doubling the number of duplicate claim messages** on each vulnerable chain. This results in:
+- **$500-$1,200/week** via amplification across Arbitrum, Monad, and Katana.
+- Each duplicated LayerZero message triggers an additional `claimPayout()` on the destination chain, effectively doubling the cross-chain replay profit.
+
+**Explicit calculation:**
+```
+AE-F-002 standalone:        $123–$304/week (3 chains)
+AE-F-005 amplification:     ×2 per chain (duplicate LZ message)
+Combined upper bound:        $304 × 2 = $608/week (conservative)
+                             $304 × 3 chains × 2 = $1,200/week (upper)
+```
+
+> Note: The standalone AE-F-005 is a griefing vector. The significant economic damage requires AE-F-002 to be present.
 
 ## Why Existing Protections Fail
 The function iterates over an array and makes external calls without a reentrancy lock. Other functions in the codebase may have locks, but this one was missed.

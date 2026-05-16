@@ -9,7 +9,7 @@ import {
 } from "../ample/interfaces/IAmpleEarnCrossChainRouter.sol";
 import {DesignatedRecipientMerkleLeaf} from "../ample/interfaces/IAmpleEarn.sol";
 
-/// @title FT-05: AE-F-002+AE-F-005 Combined Amplification PoC
+/// @title FT-05: AE-F-007 Combined Amplification PoC
 /// @notice Proves that the reentrancy gap (AE-F-005) can amplify cross-chain replay (AE-F-002)
 ///         by sending duplicate LayerZero messages for the same payoutId.
 /// @dev The attacker re-enters batchCrossChainClaimPayout via the ETH refund .call{value}()
@@ -17,7 +17,7 @@ import {DesignatedRecipientMerkleLeaf} from "../ample/interfaces/IAmpleEarn.sol"
 /// @custom:severity HIGH (Combined)
 
 /*  
-      AE-F-002 + AE-F-005: Amplification Attack
+      AE-F-007: Amplification Attack
       
       Root Cause: batchCrossChainClaimPayout (line 89) is external payable
       with NO nonReentrant modifier. Line 130 refunds excess ETH via
@@ -270,7 +270,7 @@ contract FT05_AmplificationPoCTest is Test {
         attacker.setAttackParams(abi.encode(params));
     }
 
-    /// @notice Test AE-F-002+AE-F-005: Reentrancy causes DUPLICATE LayerZero messages
+    /// @notice Test AE-F-007: Reentrancy causes DUPLICATE LayerZero messages
     ///         for the same payoutId — proving amplification of cross-chain replay.
     function test_DoubleMessageSent() public {
         // Configure attacker for 1 reentry
@@ -308,13 +308,13 @@ contract FT05_AmplificationPoCTest is Test {
         assertEq(
             sendCountAfter,
             sendCountBefore + 2,
-            "AE-F-002+005: Should send 2 LZ messages (original + reentrant duplicate)"
+            "AE-F-007: Should send 2 LZ messages (original + reentrant duplicate)"
         );
 
         // Verify both GUIDs are different (two distinct messages)
         assertTrue(
             endpoint.sentGuids(0) != endpoint.sentGuids(1),
-            "AE-F-002+005: Two messages should have different GUIDs"
+            "AE-F-007: Two messages should have different GUIDs"
         );
 
         console2.log("");

