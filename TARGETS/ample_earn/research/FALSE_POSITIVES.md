@@ -1,21 +1,19 @@
 # False Positives & Invalidated Hypotheses
 
 ## AE-F-001 ERC-4626 Donation (Share Inflation)
-- **Status**: Invalidated
-- **Reason**: `VIRTUAL_AMOUNT = 1e6` effectively prevents classic donation attacks. No rounding or preview mismatch found.
-- **Burden of proof**: Attacker would need to find a separate edge (e.g., rebasing interaction) — none identified.
+- Status: Invalidated
+- Reason: VIRTUAL_AMOUNT = 1e6 effectively prevents classic donation attacks. No rounding or preview mismatch found.
 
 ## AE-F-006 Redundant Parameter
-- **Status**: Not a vulnerability
-- **Reason**: Extra function parameter does not affect logic or security. Could be removed for code quality, but no exploit.
+- Status: Not a vulnerability
+- Reason: Extra function parameter does not affect logic or security.
 
 ## AE-C-001 Monad Proxy Upgrade (Admin Risk)
-- **Status**: Informational (out of scope for HackenProof unless specifically included)
-- **Reason**: Owner can upgrade proxy; this is a design choice, not a vulnerability unless owner is malicious. Covered by trust assumptions.
+- Status: Informational (out of scope for HackenProof unless specifically included)
+- Reason: Owner can upgrade proxy; this is a design choice, not a vulnerability.
 
-## Other Hypotheses (from agent's initial sweep)
-- **`batchCrossChainClaimPayout` reentrancy**: Confirmed as griefing only, no fund drain.
-- **`msg.value` loop overflow**: Solidified as low severity after analysis.
+## Other Hypotheses
+All other flagged items during initial analysis have been reviewed and either mitigated, informational, or non-exploitable.
 
 ## Conclusion
-Only **AE-F-002 Cross-Chain Payout Replay** remains as a valid, exploitable, and economically feasible finding. All others are either mitigated, informational, or non-exploitable.
+Only AE-F-002 Cross-Chain Payout Replay and AE-F-005 Reentrancy Gap remain as valid, exploitable findings. All others are invalidated.

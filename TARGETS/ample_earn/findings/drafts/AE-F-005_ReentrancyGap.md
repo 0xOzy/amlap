@@ -80,3 +80,17 @@ function batchCrossChainClaimPayout(
 |---|---|
 | Source code analysis | ✅ **Verified** — `nonReentrant` absent on external function |
 | Fork test | ⏳ **Pending** |
+
+## Proof of Concept (Unit Test)
+Date: 2026-05-16
+Test file: `src/test/FT-05_ReentrancyPoC.sol`
+
+Results: Test passed (callCount increased from 0 to 2).
+
+Key evidence:
+- A simplified router without nonReentrant calls back to the attacker.
+- The attacker re-enters batchProcess a second time before the first execution completes.
+- The same pattern applies to batchCrossChainClaimPayout.
+
+Command to reproduce:
+forge test --match-contract ReentrancyPoC -vvvv

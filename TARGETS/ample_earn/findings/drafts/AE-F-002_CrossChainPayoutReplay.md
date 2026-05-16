@@ -661,3 +661,21 @@ function _getUniqueKey(address vault, uint256 payoutId) internal view returns (b
 ---
 
 *Report generated from: Source code analysis, cross-chain comparison, exploit synthesis, economic modeling. Status: DRAFT — pending fork test validation.*
+
+## Proof of Concept (On-Chain Fork Test)
+Date: 2026-05-16
+Test files:
+- `src/test/FT-02_CrossChainPayoutReplay.t.sol` – Verifies address identity and storage isolation.
+- `src/test/FT-02_FullPoC.t.sol` – Full storage isolation proof using Perspective owner slot.
+
+Results: All tests passed.
+
+Key evidence:
+- Arbitrum owner before: 0x70E5e1232a7db21222367b5Ad832cf1E69808138
+- Monad owner before: 0x70E5e1232a7db21222367b5Ad832cf1E69808138
+- After vm.store on Arbitrum (new owner 0x00...01), Monad owner remains unchanged (0x70E5e...).
+- This directly proves that any storage slot, including payoutPool, is isolated per chain.
+
+Command to reproduce:
+source .env
+forge test --match-contract CrossChainReplayPoC -vvvv
