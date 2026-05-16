@@ -635,6 +635,13 @@ function _getUniqueKey(address vault, uint256 payoutId) internal view returns (b
 
 ---
 
+## Validated (2026-05-16)
+- [x] FT-02: Isolasi penyimpanan terbukti (owner diubah di Arbitrum, Monad tetap).
+- [x] Alamat factory/perspective identik di Arbitrum & Monad.
+- [x] Dasar kerentanan AE-F-002 sudah terkonfirmasi secara on-chain.
+
+---
+
 ## References
 
 | Document | Location |
